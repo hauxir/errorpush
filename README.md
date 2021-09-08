@@ -15,6 +15,6 @@ Minimalist Error collection Service
 errorpush requires docker
 
 ```bash
-docker run -p 5000:5000 -e ACCESS_TOKEN=<your_access_token> -e POSTGRES_URI=postgres://username:password@yourhost.com/yourdb hauxir/errorpush:latest
+docker run -p 5000:5000 -e ACCESS_TOKEN=<your_access_token_of_choice> -e POSTGRES_URI=postgres://username:password@yourhost.com/yourdb hauxir/errorpush:latest
 ```
 That's it, just set up a reverse proxy and point your rollbar client to your server.
