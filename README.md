@@ -9,6 +9,7 @@ Minimalist Error collection Service
 - Instant setup
 - Free
 - No rate limiting
+- When you don't need all the bells and whistles: just want to log all errors into a database.
 - Flexibility - use whatever you want to query the PostgresQL table for errors
 
 ## Running
