@@ -19,3 +19,17 @@ errorpush requires docker
 docker run -p 5000:5000 -e ACCESS_TOKEN=<your_access_token_of_choice> -e POSTGRES_URI=postgres://username:password@yourhost.com/yourdb hauxir/errorpush:latest
 ```
 That's it, just set up a reverse proxy and point your rollbar client to your server.
+
+## Example Query
+```sql
+select error_id,max(exception->>'class') as exception, max(message->>'body') as message, count(*), max(timestamp) as last_seen from errors group by error_id order by max(timestamp) desc;
+```
+```
+             error_id             | exception |   message    | count |         last_seen          
+----------------------------------+-----------+--------------+-------+----------------------------
+ 8cca0a18f56269b5a5243f7cc2906f79 | NameError |              |     4 | 2021-09-08 18:34:05.751548
+ b6012c1be2bef37f570077f2ce2e908b |           |              |     2 | 2021-09-08 18:15:09.944348
+ 5acf76ad5f327d811ca9282b5d5a933a |           | Hello world! |     3 | 2021-09-08 18:15:09.944308
+ 794ef3b916db810d9162ad54aff32a14 |           | HEY          |     1 | 2021-09-08 18:12:19.705926
+(4 rows)
+```
