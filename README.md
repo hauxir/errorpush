@@ -22,7 +22,7 @@ That's it, just set up a reverse proxy and point your rollbar client to your ser
 
 ## Example Query
 ```sql
-select error_id,max(exception->>'class') as exception, max(message->>'body') as message, count(*), max(timestamp) as last_seen from errors group by error_id order by max(timestamp) desc;
+SELECT error_id, MAX(exception ->> 'class') AS exception, MAX(message ->> 'body') AS message, COUNT(*), MAX(timestamp) AS last_seen FROM errors GROUP BY error_id ORDER BY Max(timestamp) DESC;
 ```
 ```
              error_id             | exception |   message    | count |         last_seen          
