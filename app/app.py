@@ -10,8 +10,8 @@ ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 app = Flask(__name__)
 
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<string:path>")
+@app.route("/", defaults={"path": ""}, methods=["POST"])
+@app.route("/<string:path>", methods=["POST"])
 @app.route("/<path:path>", methods=["POST"])
 def collect(path):
     token = request.json.get("access_token")
