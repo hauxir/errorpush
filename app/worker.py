@@ -53,11 +53,9 @@ def create_table():
     sql = """
       CREATE TABLE errors (
         id BIGSERIAL PRIMARY KEY,
-        error_id VARCHAR GENERATED ALWAYS AS (md5(exception::TEXT || frames::TEXT || message::TEXT)) STORED NOT NULL,
+        body JSONB NOT NULL,
+        error_id VARCHAR GENERATED ALWAYS AS (md5(body::TEXT)) STORED NOT NULL,
         timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT(NOW() AT TIME ZONE 'utc') NOT NULL,
-        exception JSONB NOT NULL,
-        message JSONB NOT NULL,
-        frames JSONB NOT NULL,
         custom JSONB,
         notifier JSONB,
         server JSONB,
@@ -85,17 +83,12 @@ except Exception as e:
 @app.task(bind=True)
 def write_to_db(self, data):
     conn = connect_db()
-    message = data.get("body", {}).get("message", {})
-    exception = data.get("body", {}).get("trace", {}).get("exception", {})
-    frames = data.get("body", {}).get("trace", {}).get("frames", [])
     with conn.cursor() as curs:
         res = curs.execute(
             """
   INSERT INTO
     errors (
-        exception,
-        message,
-        frames,
+        body,
         custom,
         notifier,
         server,
@@ -103,12 +96,10 @@ def write_to_db(self, data):
         environment,
         language,
         level
-    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         """,
             (
-                json.dumps(exception),
-                json.dumps(message),
-                json.dumps(frames),
+                json.dumps(data.get("body")),
                 json.dumps(data.get("custom", {})),
                 json.dumps(data.get("notifier", {})),
                 json.dumps(data.get("server", {})),
