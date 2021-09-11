@@ -37,7 +37,9 @@ SELECT error_id, Max(( ( BODY ->> 'trace' ) :: jsonb ->> 'exception' ) :: jsonb 
 ## Metabase
 You can use [metabase](https://github.com/metabase/metabase) to visualize the data.
 
-Example: 
+ <img width="1432" alt="Screenshot 2021-09-11 at 00 14 58" src="https://user-images.githubusercontent.com/2439255/132930119-86a6debe-0b56-43a4-b709-c64d4df24194.png">
+ 
+PostgreSQL view for the above image: 
 ```sql
 create view error_report as 
 select 
@@ -87,4 +89,3 @@ group by
 order by 
   last_seen desc;
   ```
- <img width="1432" alt="Screenshot 2021-09-11 at 00 14 58" src="https://user-images.githubusercontent.com/2439255/132930119-86a6debe-0b56-43a4-b709-c64d4df24194.png">
