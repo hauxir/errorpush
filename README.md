@@ -33,3 +33,58 @@ SELECT error_id, Max(( ( BODY ->> 'trace' ) :: jsonb ->> 'exception' ) :: jsonb 
  794ef3b916db810d9162ad54aff32a14 |           | HEY          |     1 | 2021-09-08 18:12:19.705926
 (4 rows)
 ```
+
+## Metabase
+You can use [metabase](https://github.com/metabase/metabase) to visualize the data.
+
+Example: 
+```sql
+create view error_report as 
+select 
+  error_id, 
+  max(
+    concat(
+      coalesce(
+        (
+          (body ->> 'trace'):: jsonb ->> 'exception'
+        ):: jsonb ->> 'class', 
+        'Error'
+      ), 
+      ': ', 
+      (
+        (body ->> 'trace'):: jsonb ->> 'exception'
+      ):: jsonb ->> 'message', 
+      (body ->> 'message'):: jsonb ->> 'body'
+    )
+  ) as error, 
+  count(*) as occurences, 
+  max(timestamp) as last_seen, 
+  max(
+    array_to_string(
+      array(
+        select 
+          concat(
+            el ->> 'filename', ':', el ->> 'lineno'
+          ) 
+        from 
+          jsonb_array_elements(
+            (
+              (body ->> 'trace'):: jsonb ->> 'frames'
+            ):: jsonb
+          ) as el 
+        limit 
+          4
+      ), 
+      ', '
+    )
+  ) as trace, 
+  max(environment) as environment, 
+  max(custom ->> 'revision') as revision 
+from 
+  errors 
+group by 
+  error_id 
+order by 
+  last_seen desc;
+  ```
+ <img width="1432" alt="Screenshot 2021-09-11 at 00 14 58" src="https://user-images.githubusercontent.com/2439255/132930119-86a6debe-0b56-43a4-b709-c64d4df24194.png">
