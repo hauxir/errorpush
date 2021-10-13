@@ -6,7 +6,7 @@ from celery import Celery
 import psycopg2
 
 
-POSTGRES_URI = urlparse.urlparse(os.environ["POSTGRES_URI"])
+POSTGRES_URI = urlparse.urlparse(urlparse.unquote(os.environ["POSTGRES_URI"]))
 POSTGRES_USER = POSTGRES_URI.username
 POSTGRES_PASSWORD = POSTGRES_URI.password
 POSTGRES_HOST = POSTGRES_URI.hostname
