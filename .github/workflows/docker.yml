@@ -1,0 +1,30 @@
+name: Build and Push Docker
+
+on:
+  push:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get short SHA
+      id: sha
+      run: echo "short=$(echo ${{ github.sha }} | cut -c1-6)" >> $GITHUB_OUTPUT
+
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: |
+          ghcr.io/${{ github.repository }}:latest
+          ghcr.io/${{ github.repository }}:${{ steps.sha.outputs.short }}
