@@ -10,6 +10,14 @@ ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
 app = Flask(__name__)
 
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
+
+
 @app.route("/", defaults={"path": ""}, methods=["POST"])
 @app.route("/<string:path>", methods=["POST"])
 @app.route("/<path:path>", methods=["POST"])
